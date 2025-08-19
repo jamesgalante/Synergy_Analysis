@@ -1,0 +1,11 @@
+name: synergy_analysis
+channels:
+  - conda-forge
+  - bioconda
+  - jrhawley
+dependencies:
+  - python=3.8
+  - pip
+  - hic-straw
+  - pandas
+  - numpy

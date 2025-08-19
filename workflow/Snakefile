@@ -1,0 +1,74 @@
+
+configfile: "config/config.yaml"
+
+rule all:
+  input:
+    expand("results/synergy_predictions_{cell_type}.tsv", cell_type = ["k562"])
+
+rule download_hic:
+  output:
+    hic = config["scratch_storage"] + "k562.hic"
+  params:
+    url = config["download_hic"]
+  shell:
+    """
+    wget {params.url} -O {output.hic}
+    """
+
+
+rule download_encode_predictions:
+  output:
+    predictions = "resources/encode_predictions_{cell_type}.bed"
+  params:
+    url = config["encode_predictions"]["{cell_type}"]
+  shell:
+    """
+    wget {params.url} -O {output.predictions}.gz
+    gunzip {output.predictions}.gz
+    """
+
+  
+rule pair_encode_predictions:
+  input:
+    predictions = "resources/encode_predictions_{cell_type}.bed"
+  output:
+    paired_predictions = "results/paired_encode_predictions_{cell_type}.tsv"
+  params:
+    distance_threshold = config["thresholds"]["distance"],
+    p300_threshold = config["thresholds"]["p300"]
+  conda:
+    "envs/all_packages.yml"
+  resources:
+    mem = "32G",
+    time = "1:00:00"
+  script:
+    "scripts/pair_encode_predictions.R"
+    
+    
+rule compute_hic_contacts:
+  input:
+    paired_predictions = "results/paired_encode_predictions_{cell_type}.tsv",
+    hic = config["scratch_storage"] + "k562.hic"
+  output:
+    paired_predictions_with_hic = "results/paired_encode_predictions_w_contact_{cell_type}.tsv"
+  conda:
+    "envs/hic_contact.yml"
+  resources: 
+    mem = "64G", 
+    time = "4:00:00"
+  script:
+    "scripts/compute_hic_contacts.py"
+  
+  
+rule compute_synergy_predictions:
+  input:
+    paired_predictions_with_hic = "results/paired_encode_predictions_w_contact_{cell_type}.tsv"
+  output:
+    synergy_predictions = "results/synergy_predictions_{cell_type}.tsv"
+  conda:
+    "envs/all_packages.yml"
+  resources:
+    mem = "32G",
+    time = "1:00:00"
+  script:
+    "scripts/compute_synergy_predictions.R" 
