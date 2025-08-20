@@ -1,15 +1,18 @@
 
 configfile: "config/config.yaml"
 
+
+active_cell_types = [cell_type for cell_type, status in config["cell_types_to_run"].items() if status == "ON"]
 rule all:
   input:
-    expand("results/synergy_predictions_{cell_type}.tsv", cell_type = ["k562"])
+    expand("results/synergy_predictions_{cell_type}.tsv", cell_type = active_cell_types)
+
 
 rule download_hic:
   output:
-    hic = config["scratch_storage"] + "k562.hic"
+    hic = config["scratch_storage"] + "{cell_type}.hic"
   params:
-    url = config["download_hic"]
+    url = lambda wildcards: config["download_hic"][wildcards.cell_type]
   shell:
     """
     wget {params.url} -O {output.hic}
@@ -20,7 +23,7 @@ rule download_encode_predictions:
   output:
     predictions = "resources/encode_predictions_{cell_type}.bed"
   params:
-    url = config["encode_predictions"]["{cell_type}"]
+    url = lambda wildcards: config["encode_predictions"][wildcards.cell_type]
   shell:
     """
     wget {params.url} -O {output.predictions}.gz
@@ -48,9 +51,9 @@ rule pair_encode_predictions:
 rule compute_hic_contacts:
   input:
     paired_predictions = "results/paired_encode_predictions_{cell_type}.tsv",
-    hic = config["scratch_storage"] + "k562.hic"
+    hic = config["scratch_storage"] + "{cell_type}.hic"
   output:
-    paired_predictions_with_hic = "results/paired_encode_predictions_w_contact_{cell_type}.tsv"
+    paired_predictions_with_hic = "results/predictions_w_contact_{cell_type}.tsv"
   conda:
     "envs/hic_contact.yml"
   resources: 
@@ -62,7 +65,7 @@ rule compute_hic_contacts:
   
 rule compute_synergy_predictions:
   input:
-    paired_predictions_with_hic = "results/paired_encode_predictions_w_contact_{cell_type}.tsv"
+    paired_predictions_with_hic = "results/predictions_w_contact_{cell_type}.tsv"
   output:
     synergy_predictions = "results/synergy_predictions_{cell_type}.tsv"
   conda:

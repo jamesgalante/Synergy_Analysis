@@ -1,7 +1,11 @@
 
 scratch_storage: "/scratch/users/jgalante/Synergy_Analysis/"
 
-download_hic: "https://www.encodeproject.org/files/ENCFF621AIY/@@download/ENCFF621AIY.hic"
+cell_types_to_run:
+  k562: "ON" # else OFF
+
+download_hic: 
+  k562: "https://www.encodeproject.org/files/ENCFF621AIY/@@download/ENCFF621AIY.hic"
 
 encode_predictions:
   k562: "https://www.encodeproject.org/files/ENCFF269DKY/@@download/ENCFF269DKY.bed.gz"
@@ -9,3 +13,4 @@ encode_predictions:
 thresholds:
   distance: 2e6
   p300: 5
+  
