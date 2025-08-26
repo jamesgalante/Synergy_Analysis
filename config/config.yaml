@@ -13,4 +13,5 @@ encode_predictions:
 thresholds:
   distance: 2e6
   p300: 5
-  
+  hic_res: 5000
+  EE_distance: 10000

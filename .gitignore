@@ -1,1 +1,5 @@
 .snakemake/
+.Rhistory
+results/
+resources/
+*.rda
