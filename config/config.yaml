@@ -15,3 +15,4 @@ thresholds:
   p300: 5
   hic_res: 5000
   EE_distance: 10000
+  EE_contact: 40

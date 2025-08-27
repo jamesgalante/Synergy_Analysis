@@ -82,14 +82,17 @@ rule compute_synergy_predictions:
   input:
     paired_predictions_with_hic = "results/predictions_w_contact_{cell_type}.tsv"
   output:
-    synergy_predictions = "results/synergy_predictions_{cell_type}.tsv"
+    synergy_predictions = "results/synergy_predictions_{cell_type}.tsv",
+    contact_statistics = "results/contact_statistics_{cell_type}.pdf",
+    p300_statistics = "results/p300_statistics_{cell_type}.pdf"
   params:
     EE_distance_threshold = config['thresholds']['EE_distance'],
-    p300_threshold = config['thresholds']['p300']
+    p300_threshold = config['thresholds']['p300'],
+    EE_contact_threshold = config['thresholds']['EE_contact']
   conda:
     "envs/all_packages.yml"
   resources:
     mem = "32G",
-    time = "1:00:00"
+    time = "2:00:00"
   script:
     "scripts/compute_synergy_predictions.R" 
