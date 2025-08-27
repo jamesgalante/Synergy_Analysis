@@ -11,7 +11,7 @@ encode_predictions:
   k562: "https://www.encodeproject.org/files/ENCFF269DKY/@@download/ENCFF269DKY.bed.gz"
 
 thresholds:
-  distance: 2e6
+  distance: 2000000
   p300: 5
   hic_res: 5000
   EE_distance: 10000

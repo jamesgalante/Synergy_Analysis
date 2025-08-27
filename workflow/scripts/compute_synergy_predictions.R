@@ -9,10 +9,9 @@ suppressPackageStartupMessages({
 })
 
 # Load params and paired ENCODE predictions
-p300_threshold <- snakemake@params$p300_threshold
-EE_distance_threshold <- snakemake@params$EE_distance_threshold
-EE_contact_threshold <- snakemake@params$EE_contact_threshold
-ENCODE_Score_threshold <- snakemake@params$ENCODE_Score_threshold
+p300_threshold <- as.numeric(snakemake@params$p300_threshold)
+EE_distance_threshold <- as.numeric(snakemake@params$EE_distance_threshold)
+EE_contact_threshold <- as.numeric(snakemake@params$EE_contact_threshold)
 paired_predictions_with_hic <- fread(snakemake@input$paired_predictions_with_hic)
 
 # Filter for synergistic pairs

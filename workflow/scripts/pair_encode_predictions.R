@@ -7,8 +7,8 @@ suppressPackageStartupMessages(
 )
 
 # Load params
-distance_threshold <- snakemake@params$distance_threshold
-ENCODE_Score_threshold <- snakemake@params$ENCODE_Score_threshold
+distance_threshold <- as.numeric(snakemake@params$distance_threshold)
+ENCODE_Score_threshold <- as.numeric(snakemake@params$ENCODE_Score_threshold)
 
 # Load in the predictions
 encode_predictions <- read_tsv(snakemake@input$predictions)

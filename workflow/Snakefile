@@ -53,7 +53,7 @@ rule compute_hic_contacts_per_chrom:
     paired_predictions = "results/paired_encode_predictions_{cell_type}.tsv",
     hic = config["scratch_storage"] + "{cell_type}.hic"
   output:
-    paired_predictions_with_hic_per_chrom = "results/per_chrom_predictions_w_contact_{cell_type}_{chrom}.tsv"
+    paired_predictions_with_hic_per_chrom = temp("results/per_chrom_predictions_w_contact_{cell_type}_{chrom}.tsv")
   params:
     hic_res = config['thresholds']['hic_res']
   conda:
