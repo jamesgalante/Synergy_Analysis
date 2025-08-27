@@ -43,7 +43,7 @@ p300_statistics <- plot_p300_statistics(
   syn_df = synergistic_pairs,
   p300_threshold = p300_threshold,
   cell_type = snakemake@wildcards$cell_type,
-  box_width = 0.4   # tweak as you like
+  box_width = 0.4
 )
 
 # Save output
