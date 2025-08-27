@@ -5,7 +5,7 @@ save.image("compute_synergy_predictions.rda")
 suppressPackageStartupMessages({
 	library(tidyverse)
 	library(data.table)
-  source(paste0(snakemake@scriptdir, "plotting_functions.R"))
+  source(paste0(snakemake@scriptdir, "/plotting_functions.R"))
 })
 
 # Load params and paired ENCODE predictions
@@ -47,6 +47,6 @@ p300_statistics <- plot_p300_statistics(
 )
 
 # Save output
-ggsave(plot = contact_statistics, filename = snakemake@output$contact_statistics, device = "pdf", width = 8, height = 4)
+ggsave(plot = contact_statistics, filename = snakemake@output$contact_statistics, device = "pdf", width = 10, height = 4)
 ggsave(plot = p300_statistics, filename = snakemake@output$p300_statistics, device = "pdf", width = 6, height = 4)
 write_tsv(synergistic_pairs, snakemake@output$synergy_predictions)
