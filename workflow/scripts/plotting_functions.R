@@ -122,3 +122,80 @@ plot_p300_statistics <- function(all_df,
       strip.text = element_text(size = rel(1.0))   # facet labels plain
     )
 }
+
+# Distance plots: connect per-row distances across three x-axis categories
+plot_distance_statistics <- function(all_df, 
+                                     syn_df = NULL, 
+                                     cell_type = NULL,
+                                     line_alpha = 0.08,
+                                     line_size  = 0.25,
+                                     point_size = 0.6,
+                                     max_rows_per_panel = 5000) {
+  # Helper to reshape and label
+  prep_long <- function(df, group_name) {
+    df %>%
+      mutate(row_id = row_number()) %>%
+      transmute(
+        group = group_name,
+        row_id,
+        `E1-TSS` = distanceToTSS.Feature_element1,
+        `E1-E2`  = distance_between_elements,
+        `E2-TSS` = distanceToTSS.Feature_element2
+      ) %>%
+      tidyr::pivot_longer(
+        cols = c(`E1-TSS`, `E1-E2`, `E2-TSS`),
+        names_to = "Metric",
+        values_to = "Distance"
+      )
+  }
+  
+  df_all <- prep_long(all_df, "All")
+  df <- if (!is.null(syn_df)) bind_rows(df_all, prep_long(syn_df, "Synergistic")) else df_all
+  
+  # Clean / factor levels
+  df <- df %>%
+    filter(is.finite(Distance)) %>%
+    mutate(Metric = factor(Metric, levels = c("E1-TSS", "E1-E2", "E2-TSS")))
+  
+  # n counts for strip labels (original rows per group)
+  n_all <- nrow(all_df)
+  n_syn <- if (!is.null(syn_df)) nrow(syn_df) else NA_integer_
+  strip_map <- tibble::tibble(
+    group = c("All", if (!is.null(syn_df)) "Synergistic"),
+    group_label = c(
+      paste0("All (n = ", format(n_all, big.mark = ","), ")"),
+      if (!is.null(syn_df)) paste0("Synergistic (n = ", format(n_syn, big.mark = ","), ")")
+    )
+  )
+  df <- df %>% left_join(strip_map, by = "group")
+  
+  # ---- Downsample: at most max_rows_per_panel row_ids per panel (no slice_sample) ----
+  ids_to_keep <- df %>%
+    distinct(group_label, row_id) %>%
+    split(.$group_label) %>%
+    lapply(function(dd) {
+      if (nrow(dd) > max_rows_per_panel) dd[sample.int(nrow(dd), max_rows_per_panel), , drop = FALSE] else dd
+    }) %>%
+    bind_rows()
+  
+  df <- df %>% semi_join(ids_to_keep, by = c("group_label", "row_id"))
+  
+  ggplot(df, aes(x = Metric, y = Distance, group = row_id)) +
+    geom_line(alpha = line_alpha, linewidth = line_size) +
+    geom_point(size = point_size, alpha = min(1, line_alpha * 2)) +
+    theme_classic() +
+    facet_wrap(~ group_label, nrow = 1, scales = "free_y") +
+    labs(
+      title = paste0(toupper(cell_type), ": Distances per pair"),
+      subtitle = "May include duplicates if both Enhancers target the same gene",
+      x = "Distance metric",
+      y = "Distance (bp)"
+    ) +
+    scale_y_continuous(labels = scales::label_number(big.mark = ",")) +
+    theme(
+      plot.title = element_text(size = rel(1.3)),
+      axis.title = element_text(size = rel(1.2)),
+      axis.text  = element_text(size = rel(1.0)),
+      strip.text = element_text(size = rel(1.0))
+    )
+}

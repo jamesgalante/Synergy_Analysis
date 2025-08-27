@@ -85,7 +85,8 @@ rule compute_synergy_predictions:
   output:
     synergy_predictions = "results/synergy_predictions_{cell_type}.tsv",
     contact_statistics = "results/contact_statistics_{cell_type}.pdf",
-    p300_statistics = "results/p300_statistics_{cell_type}.pdf"
+    p300_statistics = "results/p300_statistics_{cell_type}.pdf",
+    distance_statistics = "results/distance_statistics_{cell_type}.pdf"
   params:
     EE_distance_threshold = config['thresholds']['EE_distance'],
     p300_threshold = config['thresholds']['p300'],

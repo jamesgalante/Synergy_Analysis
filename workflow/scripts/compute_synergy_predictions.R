@@ -46,7 +46,15 @@ p300_statistics <- plot_p300_statistics(
   box_width = 0.4
 )
 
+distance_statistics <- plot_distance_statistics(
+  all_df = paired_predictions_with_hic,
+  syn_df = synergistic_pairs,
+  cell_type = snakemake@wildcards$cell_type,
+  max_rows_per_panel = 5000
+)
+
 # Save output
 ggsave(plot = contact_statistics, filename = snakemake@output$contact_statistics, device = "pdf", width = 10, height = 4)
 ggsave(plot = p300_statistics, filename = snakemake@output$p300_statistics, device = "pdf", width = 6, height = 4)
+ggsave(plot = distance_statistics, filename = snakemake@output$distance_statistics, device = "pdf", width = 10, height = 4)
 write_tsv(synergistic_pairs, snakemake@output$synergy_predictions)
