@@ -6,12 +6,16 @@ suppressPackageStartupMessages(
 	library(tidyverse)
 )
 
+# Load params
+distance_threshold <- snakemake@params$distance_threshold
+ENCODE_Score_threshold <- snakemake@params$ENCODE_Score_threshold
+
 # Load in the predictions
 encode_predictions <- read_tsv(snakemake@input$predictions)
 
 # Pair up the elements
 paired_predictions <- encode_predictions %>% 
-  filter(distanceToTSS.Feature < snakemake@params$distance_threshold, isSelfPromoter == F) %>% 
+  filter(distanceToTSS.Feature < distance_threshold, isSelfPromoter == F) %>% 
   # Calculate signed distance to determine which side of gene each element is on
   mutate(
     element_center = (start + end) / 2, 
@@ -28,6 +32,8 @@ paired_predictions <- encode_predictions %>%
   # This ensures each unique pair appears only once (A-B, but not B-A)
   filter(distanceToTSS.Feature_element1 > distanceToTSS.Feature_element2) %>%
   # Add the pair distance
-  mutate(distance_between_elements = distanceToTSS.Feature_element1 - distanceToTSS.Feature_element2)
+  mutate(distance_between_elements = distanceToTSS.Feature_element1 - distanceToTSS.Feature_element2) %>%
+  # Filter for enhancers that are above a certain Score
+  filter(Score_element1 >= ENCODE_Score_threshold, Score_element2 >= ENCODE_Score_threshold)
   
 write_tsv(paired_predictions, snakemake@output$paired_predictions)

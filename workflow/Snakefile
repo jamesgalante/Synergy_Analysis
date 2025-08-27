@@ -37,7 +37,8 @@ rule pair_encode_predictions:
   output:
     paired_predictions = "results/paired_encode_predictions_{cell_type}.tsv"
   params:
-    distance_threshold = config["thresholds"]["distance"]
+    distance_threshold = config["thresholds"]["distance"],
+    ENCODE_Score_threshold = config['thresholds']['ENCODE_Score']
   conda:
     "envs/all_packages.yml"
   resources:
