@@ -155,7 +155,7 @@ plot_distance_statistics <- function(all_df,
   # Clean / factor levels
   df <- df %>%
     filter(is.finite(Distance)) %>%
-    mutate(Metric = factor(Metric, levels = c("E1-TSS", "E1-E2", "E2-TSS")))
+    mutate(Metric = factor(Metric, levels = c("E1-E2", "E1-TSS", "E2-TSS")))
   
   # n counts for strip labels (original rows per group)
   n_all <- nrow(all_df)
@@ -187,7 +187,7 @@ plot_distance_statistics <- function(all_df,
     facet_wrap(~ group_label, nrow = 1, scales = "free_y") +
     labs(
       title = paste0(toupper(cell_type), ": Distances per pair"),
-      subtitle = "May include duplicates if both Enhancers target the same gene",
+      subtitle = paste0("May include duplicates if both Enhancers target the same gene - Max samples shown: ", max_rows_per_panel),
       x = "Distance metric",
       y = "Distance (bp)"
     ) +

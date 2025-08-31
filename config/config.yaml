@@ -11,9 +11,11 @@ encode_predictions:
   k562: "https://www.encodeproject.org/files/ENCFF269DKY/@@download/ENCFF269DKY.bed.gz"
 
 thresholds:
-  distance: 2000000
-  p300: 5
-  hic_res: 5000
-  EE_distance: 10000
-  EE_contact: 40
-  ENCODE_Score: 0.7
+  distance: 2000000 # Max distance between the farthest element and any TSS
+  p300: 5 # Threshold that the farther element must be above and closer element must be below
+  hic_res: 5000 # Resolutions of Hi-C for contact and plotting
+  hic_res_small: 2000 # Smaller resolution for plotting
+  EE_distance: 10000 # Max distance that doesn't consider distance in synergistic predictions
+  EE_contact: 40 # Minimum contact necessary if pairs are >EE_distance
+  ENCODE_Score: 0.7 # All enhancers filtered by Score threshold
+  plot_window: 2500000 # Size of plot on each side from center
